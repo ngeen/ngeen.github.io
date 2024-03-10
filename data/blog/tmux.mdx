@@ -1,0 +1,177 @@
+---
+title: Tmux config for v3.2 and later
+date: '2024-03-07'
+tags: ['tmux', 'config', 'bash']
+draft: false
+summary: Configuration file for tmux to make it more effective.
+---
+
+Tmux is an amazing tool for developers, sysadmins and devops. You can use tmux to multiplex the terminal. 
+You can use screen either. In linux I am using tmux for several reasons. For example you can divide terminal to panels. 
+One panel can indicate the logs and vi or vim can open in the other panel in the same window. 
+Or you want to run a bash command in the background. 
+
+I was using tmux version 2 on the corparate server and I have an amazing configuration. 
+However, with the version 3.2 most of configurations were depricated or removed. 
+So I've updated the config for the new version of tmux. You can copy the following config into the ~/.tmux.conf file.
+
+## open tmux config
+
+```bash
+sudo vi ~/.tmux.conf
+```
+
+## configurations
+
+```bash
+# Set escape time to off for smoother VI experience
+set -sg escape-time 0
+
+# Use C-a as prefix key
+set -g prefix C-a
+
+# Use 256 colors
+set -g default-terminal "screen-256color"
+
+# Enable mouse functionality
+set -g mouse on
+
+# Start window and pane numbering at 1
+set -g base-index 1
+set -g pane-base-index 1
+set -g renumber-windows on
+
+# Disable window renaming by users
+set -g allow-rename off
+
+# Set scrollback history limit
+set -g history-limit 5000
+
+# Bindings
+unbind %
+bind | split-window -h
+bind _ split-window -v
+
+unbind [
+bind Escape copy-mode
+unbind p
+bind p paste-buffer
+bind-key -T copy-mode-vi v send -X begin-selection
+bind-key -T copy-mode-vi y send -X copy-selection
+bind-key -T copy-mode-vi V send -X rectangle-toggle
+
+# Move X clipboard content to tmux paste buffer
+bind C-p run "tmux set-buffer - \"$(xclip -o)\"; tmux paste-buffer"
+
+# Move tmux copy buffer content to X clipboard
+bind C-y run "tmux save-buffer - | xclip -i"
+
+# Send prefix key with C-a
+bind C-a send-prefix
+
+# Switch to last window with "a"
+bind a last-window
+
+# Status line configuration
+set -g status-bg colour235
+set -g message-style fg=colour222
+set -g status-justify centre
+set -g status-left-length 100
+set -g pane-border-style fg=white,bg=colour234
+set -g message-style bg=colour235
+set -g status-right-length 100
+set -g status-right '
+  #[fg=colourX,bg=colourY] #(element)  # Set colors for the element
+  # Add similar escape sequences for other elements
+'
+set -g message-command-style bg=colour238
+
+# Set both active and inactive pane borders to have a white foreground and a dark gray background
+set -g pane-border-style fg=white,bg=colour234
+
+setw -g window-status-separator ''
+
+# Set basic colors for all windows and define active window colors
+set -g window-status-style "fg=colour235,bg=colour234"
+set -g window-status-current-style "fg=colour222,bg=colour238"
+
+# Status left configuration
+set -g status-left '#[fg=colour232,bg=colour154] #S #[fg=colour154,bg=colour238,nobold,nounderscore,noitalics]#[fg=colour222,bg=colour238] #W #[fg=colour238,bg=colour235,nobold,nounderscore,noitalics]#[fg=colour121,bg=colour235] #(whoami)  #(uptime  | cut -d " " -f 1,2,3) #[fg=colour235,bg=colour235,nobold,nounderscore,noitalics]'
+
+# Status right configuration
+set -g status-right '#[fg=colour235,bg=colour235,nobold,nounderscore,noitalics]#[fg=colour121,bg=colour235] %r   %a  %Y #[fg=colour238,bg=colour235,nobold,nounderscore,noitalics]#[fg=colour222,bg=colour238] #H #[fg=colour154,bg=colour238,nobold,nounderscore,noitalics] #(rainbarf --battery --remaining --no-rgb) '
+
+# Window status format
+setw -g window-status-format '#[fg=colour235,bg=colour235,nobold,nounderscore,noitalics]#[default] #I  #W #[fg=colour235,bg=colour235,nobold,nounderscore,noitalics]'
+
+# Window status current format
+setw -g window-status-current-format '#[fg=colour235,bg=colour238,nobold,nounderscore,noitalics]#[fg=colour222,bg=colour238] #I  #W  #F #[fg=colour238,bg=colour235,nobold,nounderscore,noitalics]'
+
+bind-key -n 'C-h' if-shell "$is_vim" "send-keys C-h" "select-pane -L"
+bind-key -n 'C-j' if-shell "$is_vim" "send-keys C-j" "select-pane -D"
+bind-key -n 'C-k' if-shell "$is_vim" "send-keys C-k" "select-pane -U"
+bind-key -n 'C-l' if-shell "$is_vim" "send-keys C-l" "select-pane -R"
+
+bind C-l send-keys 'C-l'
+
+bind -n M-h previous-window
+bind -n M-l next-window
+bind -n M-Left previous-window
+bind -n M-Right next-window
+
+# Reload the config.
+bind r source-file ~/.tmux.conf \; display "Reloaded ~/.tmux.conf"
+
+# Set panel title
+bind t command-prompt -p "Panel title:" "send-keys 'printf \"'\\033]2;%%\\033\\\\'\"' C-m"
+
+# Do not load them if remote, since it's probably a nested tmux and I want an
+# easy way to differentiate the two
+if-shell 'test -z "$SSH_CLIENT"' \
+  "source-file ~/.tmux-theme.conf"
+```
+
+## usage
+
+If you have opened session before `tmux attach` will make you attach to the last session. 
+Default tmux uses `Ctrl + B` we changed this with `Ctrl + A`.
+
+## create new window
+
+```javascript
+Ctrl + A + C
+```
+
+## create new vertical pane
+
+```javascript
+Ctrl + A + |
+````
+
+## create new horizontal pane
+
+```javascript
+Ctrl + A + _
+```
+
+## zoom to current pane
+
+```javascript
+Ctrl + A + Z
+```
+
+## select window or pane
+
+You can use mouse in the terminal to select pane or window. If you are stick to terminal then;
+
+### for select pane
+
+```javascript
+Ctrl + A + direction keys(up, down, right, left)
+```
+
+### for select window
+
+```javascript
+Ctrl + A + numkeys
+```
