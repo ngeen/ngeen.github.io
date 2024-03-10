@@ -1,0 +1,5 @@
+User-Agent: *
+Allow: /
+
+Host: https://www.oenginoz.com
+Sitemap: https://www.oenginoz.com/sitemap.xml
