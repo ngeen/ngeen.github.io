@@ -32,7 +32,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Core Pack
-        run: corepack enable
+        run: |
+          corepack enable &&
+          corepack install # use the in-repo yarn version
       - name: Detect package manager
         id: detect-package-manager
         run: |
