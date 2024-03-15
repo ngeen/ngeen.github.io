@@ -58,6 +58,7 @@ jobs:
             corepack enable
             corepack prepare yarn@3.6.1 --activate
             yarn set version 3.6.1
+      - run: npm -v
       - name: Setup Pages
         uses: actions/configure-pages@v4
         with:
