@@ -31,8 +31,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Enable Corepack
-        run: corepack enable
       - name: Install yarn
         run: npm install -g yarn
       - name: Detect package manager
@@ -57,6 +55,11 @@ jobs:
         with:
           node-version: "20"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
+      - name: Enable corepack
+        run: |
+            corepack enable
+            corepack prepare yarn@3.5.1 --activate
+            yarn set version 3.5.1
       - name: Setup Pages
         uses: actions/configure-pages@v4
         with:
