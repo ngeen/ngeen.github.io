@@ -51,13 +51,13 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "21"
+          node-version: "21.7.0"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
       - name: Enable corepack
         run: |
             corepack enable
-            corepack prepare yarn@3.6.4 --activate
-            yarn set version 3.6.4
+            corepack prepare yarn@3.6.1 --activate
+            yarn set version 3.6.1
       - name: Setup Pages
         uses: actions/configure-pages@v4
         with:
